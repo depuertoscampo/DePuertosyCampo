@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>De Puertos y Campo — Carta Digital</title>
+<link href="https://fonts.googleapis.com/css2?family=Satisfy&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════
+   BASE
+══════════════════════════════════════════════ */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: #0a0a0a; font-family: 'Oswald', sans-serif; min-height: 100vh; }
+
+.carta-wrapper { max-width: 520px; margin: 0 auto; background: #000; position: relative; }
+
+/* ══════════════════════════════════════════════
+HEADER PRINCIPAL
+══════════════════════════════════════════════ */
+.main-header {
+background:
+linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.35) 100%),
+url(‘https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80’) center/cover no-repeat;
+padding: 24px 16px 16px;
+text-align: center;
+position: relative;
+overflow: hidden;
+}
+.main-header::before {
+content: ‘’;
+position: absolute; inset: 0;
+background: repeating-linear-gradient(90deg, rgba(255,255,255,.015) 0, rgba(255,255,255,.015) 1px, transparent 1px, transparent 40px);
+}
+.header-brand {
+display: inline-block;
+background: rgba(0,0,0,.6);
+border: 1.5px solid rgba(255,255,255,.2);
+border-radius: 8px;
+padding: 10px 32px 12px;
+position: relative;
+}
+.header-brand::before {
+content: ‘’;
+position: absolute; top: 0; left: 0;
+width: 30px; height: 30px;
+background: linear-gradient(135deg, #d52b1e 50%, #003087 50%);
+border-radius: 8px 0 0 0;
+opacity: .9;
+}
+.header-sub  { font-size: .5rem; letter-spacing: .3em; color: rgba(255,255,255,.5); text-transform: uppercase; }
+.header-name {
+font-size: clamp(1.5rem, 6vw, 2.2rem);
+font-weight: 700;
+color: #fff;
+letter-spacing: .1em;
+text-transform: uppercase;
+line-height: 1;
+text-shadow: 0 2px 8px rgba(0,0,0,.5);
+}
+.header-name span { color: #C8A000; }
+.header-ig {
+margin-top: 8px;
+font-size: .6rem;
+color: rgba(255,255,255,.4);
+letter-spacing: .1em;
+}
+
+/* ══════════════════════════════════════════════
+NAV TABS — sticky
+══════════════════════════════════════════════ */
+.nav-tabs {
+position: sticky;
+top: 0;
+z-index: 100;
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+background: #111;
+border-bottom: 2px solid #222;
+box-shadow: 0 2px 16px rgba(0,0,0,.6);
+}
+
+.tab-btn {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+gap: 2px;
+padding: 10px 4px 8px;
+border: none;
+background: transparent;
+color: rgba(255,255,255,.38);
+font-family: ‘Oswald’, sans-serif;
+font-size: .58rem;
+font-weight: 500;
+letter-spacing: .1em;
+text-transform: uppercase;
+cursor: pointer;
+transition: all .22s ease;
+border-bottom: 3px solid transparent;
+position: relative;
+}
+.tab-btn .tab-icon { font-size: 1.2rem; line-height: 1; }
+.tab-btn:hover { color: rgba(255,255,255,.7); background: rgba(255,255,255,.04); }
+
+/* Activos con color temático */
+.tab-btn.active-mar   { color: #5BC8F5; border-bottom-color: #5BC8F5; background: rgba(91,200,245,.07); }
+.tab-btn.active-campo { color: #7EC850; border-bottom-color: #7EC850; background: rgba(126,200,80,.07); }
+.tab-btn.active-sushi { color: #FF7070; border-bottom-color: #FF7070; background: rgba(255,112,112,.07); }
+.tab-btn.active-tragos{ color: #C8A000; border-bottom-color: #C8A000; background: rgba(200,160,0,.07); }
+
+/* Indicador inferior animado */
+.tab-btn::after {
+content: ‘’;
+position: absolute;
+bottom: -2px; left: 50%;
+transform: translateX(-50%) scaleX(0);
+width: 60%;
+height: 3px;
+border-radius: 2px 2px 0 0;
+transition: transform .22s ease;
+}
+.tab-btn.active-mar::after   { background: #5BC8F5; transform: translateX(-50%) scaleX(1); }
+.tab-btn.active-campo::after { background: #7EC850; transform: translateX(-50%) scaleX(1); }
+.tab-btn.active-sushi::after { background: #FF7070; transform: translateX(-50%) scaleX(1); }
+.tab-btn.active-tragos::after{ background: #C8A000; transform: translateX(-50%) scaleX(1); }
+
+/* ══════════════════════════════════════════════
+PANELS
+══════════════════════════════════════════════ */
+.panel { display: none; }
+.panel.visible {
+display: block;
+animation: fadeUp .3s ease both;
+}
+@keyframes fadeUp {
+from { opacity: 0; transform: translateY(10px); }
+to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Fondos fotográficos ── */
+.sec {
+position: relative;
+padding: 0 0 20px;
+min-height: 50vh;
+}
+.sec-mar   { background: linear-gradient(180deg,rgba(0,15,40,.78) 0%,rgba(0,30,70,.65) 50%,rgba(0,15,40,.82) 100%), url(‘https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=600&q=80’) center/cover no-repeat; }
+.sec-campo { background: linear-gradient(180deg,rgba(5,25,5,.80) 0%,rgba(10,40,8,.70) 50%,rgba(5,25,5,.84) 100%), url(‘https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80’) center/cover no-repeat; }
+.sec-sushi { background: linear-gradient(180deg,rgba(20,0,0,.84) 0%,rgba(40,5,5,.74) 50%,rgba(20,0,0,.88) 100%), url(‘https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=600&q=80’) center/cover no-repeat; }
+.sec-tragos{ background: #f2ede4; }
+
+/* ── Logo de sección ── */
+.logo-wrap { display:flex; justify-content:center; align-items:center; padding:14px 0 10px; position:relative; }
+.logo-box  { border:1.5px solid rgba(255,255,255,.25); border-radius:6px; padding:8px 28px 10px; text-align:center; position:relative; min-width:180px; }
+.logo-box::before { content:’’; position:absolute; top:0; left:0; width:26px; height:26px; background:linear-gradient(135deg,#d52b1e 50%,#003087 50%); border-radius:6px 0 0 0; opacity:.9; }
+.logo-mar   { background:rgba(15,40,90,.88); }
+.logo-campo { background:rgba(10,40,10,.85); }
+.logo-sushi { background:rgba(80,0,0,.88); border-color:rgba(255,255,255,.22); }
+.logo-sub  { font-size:.5rem; letter-spacing:.25em; color:rgba(255,255,255,.5); text-transform:uppercase; margin-bottom:2px; }
+.logo-name { font-size:1.8rem; font-weight:700; letter-spacing:.12em; color:#fff; line-height:1; text-transform:uppercase; }
+.deco      { position:absolute; opacity:.45; }
+.deco-r    { right:-4px; top:50%; transform:translateY(-55%) rotate(-10deg); font-size:2.4rem; }
+.deco-l    { left:2px;   top:50%; transform:translateY(-20%); font-size:1.4rem; line-height:1.8; }
+.deco-rr   { right:2px;  top:50%; transform:translateY(-20%); font-size:1.3rem; line-height:1.8; }
+
+/* ── Cuerpo de sección ── */
+.sec-body { padding:6px 10px 0; display:flex; flex-direction:column; gap:8px; }
+
+/* ── Bloques ── */
+.bloque    { border:1px solid rgba(255,255,255,.12); border-radius:4px; overflow:hidden; }
+.bg-mar    { background:rgba(5,20,60,.72); }
+.bg-campo  { background:rgba(5,30,5,.75); }
+.bg-sushi  { background:rgba(60,0,0,.68); border-color:rgba(255,100,100,.15); }
+.bloque-titulo { font-family:‘Satisfy’,cursive; font-size:1.05rem; color:#fff; background:rgba(0,0,0,.25); padding:5px 12px; border-bottom:1px solid rgba(255,255,255,.12); }
+.t-sushi { background:rgba(120,0,0,.5); border-bottom-color:rgba(255,100,100,.15); }
+
+/* ── Dos columnas ── */
+.dos-col { display:grid; grid-template-columns:1fr 1fr; }
+.col-bloque { padding:6px 10px 8px; }
+.col-bloque:first-child { border-right:1px solid rgba(255,255,255,.1); }
+.col-tit { font-family:‘Satisfy’,cursive; font-size:.85rem; color:rgba(255,255,255,.85); margin-bottom:4px; }
+.col-tit small { font-family:‘Oswald’,sans-serif; font-size:.58rem; color:rgba(255,255,255,.45); font-style:italic; }
+.col-tit.sushi-st { color:rgba(255,180,180,.9); }
+
+/* ── Filas de plato ── */
+.fila { display:flex; justify-content:space-between; align-items:baseline; padding:1.5px 0; border-bottom:1px dotted rgba(255,255,255,.07); gap:4px; }
+.fila:last-child { border-bottom:none; }
+.f-n  { font-size:.68rem; font-weight:300; color:#dde; line-height:1.3; flex:1; }
+.f-n em { font-size:.6rem; color:rgba(255,255,255,.38); font-style:italic; }
+.f-p  { font-size:.68rem; font-weight:500; color:#fff; white-space:nowrap; }
+.una-col { padding:6px 12px 8px; }
+.nota-stock { text-align:right; font-size:.55rem; color:rgba(255,255,255,.3); font-style:italic; padding:2px 10px 3px; }
+
+/* ── Tabla sándwiches ── */
+.tabla-sand { width:100%; border-collapse:collapse; }
+.tabla-sand th { font-size:.55rem; font-weight:400; letter-spacing:.08em; text-transform:uppercase; color:rgba(200,255,150,.75); padding:4px 6px 3px; border-bottom:1px solid rgba(255,255,255,.15); text-align:left; }
+.tabla-sand th:not(:first-child) { text-align:center; }
+.tabla-sand td { padding:2.5px 6px; color:#d8e8d0; border-bottom:1px dotted rgba(255,255,255,.07); font-size:.62rem; font-weight:300; }
+.tabla-sand td:not(:first-child) { text-align:center; font-weight:400; color:#fff; }
+.tabla-sand tr:last-child td { border-bottom:none; }
+.tabla-sand .nd { color:rgba(255,255,255,.2)!important; }
+
+/* ── Tabla rolls sushi ── */
+.tabla-rolls { width:100%; border-collapse:collapse; }
+.tabla-rolls th { font-size:.55rem; font-weight:400; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,180,180,.75); padding:4px 6px 3px; border-bottom:1px solid rgba(255,100,100,.2); text-align:left; }
+.tabla-rolls th:not(:first-child) { text-align:center; }
+.tabla-rolls td { padding:2.5px 6px; color:#f0d0d0; border-bottom:1px dotted rgba(255,255,255,.07); font-size:.62rem; font-weight:300; }
+.tabla-rolls td:not(:first-child) { text-align:center; font-weight:500; color:#fff; }
+.tabla-rolls tr:last-child td { border-bottom:none; }
+.roll-desc { font-size:.56rem; color:rgba(255,255,255,.38); display:block; font-style:italic; line-height:1.2; }
+
+/* ══════════════════════════════════════════════
+TRAGOS — fondo claro
+══════════════════════════════════════════════ */
+.tragos-header { background:#111; text-align:center; padding:10px; position:relative; }
+.tragos-titulo { font-size:1.1rem; font-weight:700; letter-spacing:.2em; color:#f2ede4; text-transform:uppercase; }
+.tdl { position:absolute; left:6px; top:8px; font-size:2.2rem; opacity:.3; }
+.tdr { position:absolute; right:6px; top:8px; font-size:2rem; opacity:.3; }
+
+.tragos-row { display:grid; border-bottom:1.5px solid #ccc; }
+.tragos-row.c4 { grid-template-columns:repeat(4,1fr); }
+.tragos-row.c2 { grid-template-columns:1fr 1fr; }
+.tragos-row:last-child { border-bottom:none; }
+.t-col { border-right:1.5px solid #ccc; }
+.t-col:last-child { border-right:none; }
+.t-col-h  { font-size:.56rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#f2ede4; background:#111; padding:5px 6px; border-bottom:1.5px solid #ccc; text-align:center; }
+.t-col-sh { font-size:.52rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#f2ede4; background:#333; padding:3px 6px; border-bottom:1px solid #ccc; border-top:1px solid #ccc; text-align:center; }
+.t-item { display:flex; justify-content:space-between; align-items:baseline; padding:2px 5px; border-bottom:1px solid #e0dbd0; gap:3px; }
+.t-item:last-child { border-bottom:none; }
+.t-n { font-size:.58rem; font-weight:400; color:#222; line-height:1.3; flex:1; }
+.t-p { font-size:.58rem; font-weight:600; color:#111; white-space:nowrap; }
+
+/* ══════════════════════════════════════════════
+FOOTER
+══════════════════════════════════════════════ */
+.footer-carta {
+background: repeating-linear-gradient(90deg,rgba(0,0,0,.06) 0,rgba(0,0,0,.06) 1px,transparent 1px,transparent 36px),
+linear-gradient(180deg,#7a4520 0%,#5c3010 40%,#7a4520 100%);
+border-top:3px solid #4a2208;
+padding:10px 16px;
+display:flex; justify-content:space-between; align-items:center;
+}
+.footer-ig { font-size:.6rem; color:rgba(255,255,255,.65); letter-spacing:.06em; }
+.footer-ig span { color:#ff6b6b; font-weight:600; }
+.footer-logo {
+background:rgba(15,40,90,.9); border:1.5px solid rgba(255,255,255,.3);
+border-radius:50%; width:42px; height:42px;
+display:flex; align-items:center; justify-content:center;
+font-size:.35rem; font-weight:700; color:#fff; text-align:center;
+letter-spacing:.05em; line-height:1.2; text-transform:uppercase;
+}
+</style>
+
+</head>
+<body>
+<div class="carta-wrapper">
+
+  <!-- ── Header ── -->
+
+  <div class="main-header">
+    <div class="header-brand">
+      <div class="header-sub">Carta Digital</div>
+      <div class="header-name">De Puertos <span>&</span> Campo</div>
+    </div>
+    <div class="header-ig">📷 @depuertosycampooficial</div>
+  </div>
+
+  <!-- ══ NAV TABS ══ -->
+
+  <nav class="nav-tabs" id="nav-tabs">
+    <button class="tab-btn" data-panel="mar"    onclick="showPanel('mar')">
+      <span class="tab-icon">🐟</span>De Puertos
+    </button>
+    <button class="tab-btn" data-panel="campo"  onclick="showPanel('campo')">
+      <span class="tab-icon">🌿</span>Campo
+    </button>
+    <button class="tab-btn" data-panel="sushi"  onclick="showPanel('sushi')">
+      <span class="tab-icon">🍣</span>Sushi
+    </button>
+    <button class="tab-btn" data-panel="tragos" onclick="showPanel('tragos')">
+      <span class="tab-icon">🍹</span>Tragos
+    </button>
+  </nav>
+
+  <!-- ══ PANELS ══ -->
+
+  <div id="panel-mar"    class="panel"></div>
+  <div id="panel-campo"  class="panel"></div>
+  <div id="panel-sushi"  class="panel"></div>
+  <div id="panel-tragos" class="panel"></div>
+
+  <!-- ── Footer ── -->
+
+  <div class="footer-carta">
+    <div class="footer-ig">
+      <span>📷</span> Síguenos en Instagram<br>
+      <span>@depuertosycampooficial</span>
+    </div>
+    <div class="footer-logo">DE<br>PUERTOS<br>&<br>CAMPO</div>
+  </div>
+
+</div><!-- /carta-wrapper -->
+
+<!-- ════════════════════════════════════════════════════════════
+  ✏️  DATOS MAESTROS
+  Edita aquí para actualizar la carta.
+  Mismo orden que el archivo Excel adjunto.
+════════════════════════════════════════════════════════════ -->
+
+<script>
+const DATA = {
+
+  /* ── DE PUERTOS ─────────────────────────────────────── */
+  mar: [
+    {
+      sec: "Entradas y Ensaladas",
+      items: [
+        ["Calamares a la Romana*", "",  "5.500",  "Sí"],
+        ["Ensalada de Camarones",  "",  "5.800",  "Sí"],
+        ["Ceviche",                "",  "8.000",  "Sí"],
+        ["Ensalada César Salmón",  "",  "10.000", "Sí"],
+        ["Leche de tigre",         "",  "9.500",  "Sí"],
+      ]
+    },
+    {
+      sec: "Empanadas (15 cms.)",
+      items: [
+        ["Camarón queso",   "", "3.100", "Sí"],
+        ["Macho queso",     "", "3.100", "Sí"],
+        ["Jalba queso",     "", "3.300", "Sí"],
+        ["Ostión*",         "", "3.700", "Sí"],
+        ["Loco*",           "", "3.300", "Sí"],
+        ["Centolla queso*", "", "3.700", "Sí"],
+      ],
+      par: {
+        sec: "Pescados (incluye agregado)",
+        items: [
+          ["Merluza",   "", "7.200", "Sí"],
+          ["Pangasius", "", "7.200", "Sí"],
+          ["Tilapia",   "", "7.200", "Sí"],
+          ["Reineta",   "", "7.800", "Sí"],
+          ["Salmón",    "", "8.600", "Sí"],
+        ]
+      }
+    },
+    {
+      sec: "Mariscos",
+      items: [
+        ["Chupe de marisco",     "", "7.100", "Sí"],
+        ["Chupe de camarón",     "", "7.400", "Sí"],
+        ["Camarones al ajo",     "", "7.700", "Sí"],
+        ["Camarones al pil pil", "", "7.900", "Sí"],
+        ["Chupe jalba",          "", "8.300", "Sí"],
+        ["Locos al ajo*",        "", "8.700", "Sí"],
+        ["Chupe loco*",          "", "8.800", "Sí"],
+        ["Centolla*",            "", "8.800", "Sí"],
+        ["Chupe de centolla*",   "", "9.300", "Sí"],
+      ]
+    },
+    {
+      sec: "Acompañamientos",
+      items: [
+        ["Arroz",           "", "2.600", "Sí"],
+        ["Ensalada surtida","", "2.600", "Sí"],
+        ["Papas mayo",      "", "2.700", "Sí"],
+        ["Puré",            "", "2.800", "Sí"],
+        ["Papas fritas",    "", "3.000", "Sí"],
+      ],
+      stock: true
+    },
+  ],
+
+  /* ── DE CAMPO ───────────────────────────────────────── */
+  campo: [
+    {
+      sec: "Para picar",
+      items: [
+        ["Papas SUPREMAS",           "desde", "1.900",  "Sí"],
+        ["Charrillana pollo",        "",      "3.800",  "Sí"],
+        ["Charrillana carne",        "",      "6.400",  "Sí"],
+        ["Charrillana DOBLE carne",  "",      "12.500", "Sí"],
+        ["Charrillana TRIPLE carne", "",      "13.500", "Sí"],
+      ],
+      par: {
+        sec: "Entradas y Ensaladas",
+        items: [
+          ["Vegetarianas",               "", "4.100", "Sí"],
+          ["Carne",                      "", "1.500", "Sí"],
+          ["Champiñones a la parmesana", "", "3.300", "Sí"],
+        ]
+      }
+    },
+    {
+      sec: "Empanadas (15 cms.)",
+      items: [
+        ["Queso",           "", "2.800", "Sí"],
+        ["Choclo/queso",    "", "2.800", "Sí"],
+        ["Champiñón queso", "", "2.900", "Sí"],
+        ["Jamón queso",     "", "2.900", "Sí"],
+        ["Pino",            "", "2.900", "Sí"],
+        ["Napolitana",      "", "3.000", "Sí"],
+        ["Pino queso crema","", "3.000", "Sí"],
+      ],
+      par: {
+        sec: "Ave",
+        items: [
+          ["Pollo a la plancha", "chico", "3.600", "Sí"],
+          ["Pollo frito",        "chico", "4.600", "Sí"],
+          ["Pollo al limón",     "chico", "3.800", "Sí"],
+          ["Pollo a la mostaza", "chico", "3.600", "Sí"],
+          ["Pollo a lo pobre",   "",      "5.700", "Sí"],
+        ]
+      }
+    },
+    {
+      sec: "Vacuno y Cerdo",
+      items: [
+        ["Osobuco",             "",        "7.100",  "Sí"],
+        ["Plateada",            "",        "7.400",  "Sí"],
+        ["Plateada a lo pobre", "",        "7.400",  "Sí"],
+        ["Mechado",             "suprema", "7.400",  "Sí"],
+        ["Lomo",                "",        "7.700",  "Sí"],
+        ["Lomo a lo pobre",     "",        "7.700",  "Sí"],
+        ["Bife",                "",        "9.300",  "Sí"],
+        ["Bife a lo pobre",     "",        "10.000", "Sí"],
+        ["Costillar",           "",        "8.400",  "Sí"],
+      ],
+      sandwiches: [
+        ["Lomo",              "5.400", "—",     "—",     "Sí"],
+        ["Churrasco",         "3.400", "3.600", "—",     "Sí"],
+        ["Mechado",           "3.400", "3.600", "5.000", "Sí"],
+        ["Carne",             "3.600", "3.800", "—",     "Sí"],
+        ["Pollo",             "5.200", "5.800", "5.700", "Sí"],
+        ["Completo Italiano", "—",     "3.100", "—",     "Sí"],
+        ["A lo italiano",     "—",     "3.600", "—",     "Sí"],
+        ["As italiano",       "—",     "4.100", "—",     "Sí"],
+      ]
+    },
+    {
+      sec: "Acompañamientos",
+      items: [
+        ["Arroz",           "", "2.600", "Sí"],
+        ["Ensalada surtida","", "2.600", "Sí"],
+        ["Papas mayo",      "", "2.700", "Sí"],
+        ["Puré",            "", "2.800", "Sí"],
+        ["Papas fritas",    "", "3.000", "Sí"],
+      ],
+      stock: true
+    },
+  ],
+
+  /* ── SUSHI ──────────────────────────────────────────── */
+  sushi: {
+    rolls: [
+      ["California Roll", "Cangrejo, palta, pepino · cubierto con sésamo",     "6.900", "12.900", "Sí"],
+      ["Filadelfia Roll", "Salmón, queso crema, pepino",                        "7.500", "13.900", "Sí"],
+      ["Tempura Roll",    "Camarón tempura, palta, salsa spicy",                "7.900", "14.900", "Sí"],
+      ["Spicy Tuna Roll", "Atún, pepino, salsa picante, tobiko",                "7.500", "13.900", "Sí"],
+      ["Dragon Roll",     "Camarón tempura, palta, cubierto de palta laminada", "8.500", "15.900", "Sí"],
+      ["Rainbow Roll",    "California roll cubierto con salmón, atún y palta",  "8.900", "16.900", "Sí"],
+      ["Veggie Roll",     "Palta, pepino, zanahoria, queso crema",              "5.900", "10.900", "Sí"],
+    ],
+    fritos: [
+      ["Crunchy Salmón",  "Salmón, palta, apanado",     "8.200", "Sí"],
+      ["Crunchy Camarón", "Camarón, queso crema",       "8.200", "Sí"],
+      ["Volcano Roll",    "Atún, mayo spicy, horneado", "9.000", "Sí"],
+      ["Katsu Roll",      "Pollo apanado, teriyaki",    "7.900", "Sí"],
+    ],
+    extras: [
+      ["Salsa de soya",        "300", "Sí"],
+      ["Wasabi extra",         "400", "Sí"],
+      ["Jengibre encurtido",   "400", "Sí"],
+      ["Salsa spicy mayo",     "500", "Sí"],
+      ["Salsa unagi (anguila)","500", "Sí"],
+      ["Toppings tobiko",      "600", "Sí"],
+    ],
+    combos: [
+      ["Combo Dúo",    "2 rolls a elección (16 pzas)",      "13.900", "Sí"],
+      ["Combo Familia","4 rolls a elección (32 pzas)",      "25.900", "Sí"],
+      ["Combo Deluxe", "California + Filadelfia + Tempura", "19.900", "Sí"],
+    ]
+  },
+
+  /* ── TRAGOS ─────────────────────────────────────────── */
+  tragos: {
+    fila1: {
+      cervezasInd:   [["Heineken","2.000","Sí"],["Royal","2.300","Sí"],["Kunstmann","2.200","Sí"],["Cristal","2.400","Sí"],["Escudo","2.100","Sí"]],
+      cervezasLitro: [["Royal","15.000","Sí"],["Escudo","14.000","Sí"],["Stella Artois","16.000","Sí"]],
+      schop:         [["Royal","3.500","Sí"],["Heineken","3.800","Sí"],["Kunstmann","4.100","Sí"]],
+      piscos:        [["Alto del Carmen 35","4.000","Sí"],["Mistral 40","4.000","Sí"],["Bronson Defiant 35","4.400","Sí"],["Alto del Carmen 40","4.600","Sí"],["Mistral Premium 40","5.000","Sí"],["Aba Rioja 40","5.000","Sí"]],
+    },
+    fila2: {
+      cocteles: [["Mojito","4.000","Sí"],["Mojito Grandes","5.000","Sí"],["Piña Colada","4.000","Sí"],["Sour","4.500","Sí"],["Margarita","4.000","Sí"],["Cosmopolitan","4.500","Sí"],["Espresso Martini","5.500","Sí"],["Whiskey Sour","5.000","Sí"],["Sangría","5.500","Sí"]],
+      ron:     [["Bacardi","4.400","Sí"],["Havana Club","4.700","Sí"]],
+      gin:     [["Bombay","5.400","Sí"],["Tanqueray","5.400","Sí"]],
+      tequila: [["José Cuervo","3.400","Sí"]],
+      whisky:  [["Johnnie Walker Red","4.500","Sí"],["Johnnie Walker Black","5.000","Sí"],["Jack Daniel's","5.000","Sí"]],
+      vodka:   [["Stolichana","4.000","Sí"],["Absolut","4.500","Sí"]],
+    },
+    fila3: {
+      vinosPrep: [["Torrontés","4.500 / 18.000","Sí"],["Merlot","4.500 / 18.000","Sí"],["Pinot de Barazone","4.500 / 18.000","Sí"],["Danbier","4.500 / 18.000","Sí"]],
+      vinos:     [["Copa de vino tinto y blanco","3.000","Sí"],["Botella Casillero del Diablo","25.500","Sí"],["Cabernet Sauvignon","8.500","Sí"],["Sauvignon Blanc","9.500","Sí"],["Chardonnay","9.500","Sí"],["Espumante Valevoso Brut (copa)","11.000","Sí"],["Espumante Valevoso Brut (botella)","18.000","Sí"]],
+    }
+  }
+};
+
+/* ════════════════════════════════════════════════════════════
+   RENDER ENGINE
+════════════════════════════════════════════════════════════ */
+const filt = arr => arr.filter(i => i[i.length-1] === 'Sí');
+const fila = (n,d,p) => `<div class="fila"><span class="f-n">${n}${d?` <em>— ${d}</em>`:''}</span><span class="f-p">$ ${p}</span></div>`;
+const tItem = arr => filt(arr).map(i=>`<div class="t-item"><span class="t-n">${i[0]}</span><span class="t-p">$${i[1]}</span></div>`).join('');
+
+function renderSec(secs, bg, tt) {
+  return secs.map(s => {
+    if (s.par) {
+      const L = filt(s.items), R = filt(s.par.items);
+      return `<div class="bloque ${bg}"><div class="dos-col">
+        <div class="col-bloque"><div class="col-tit">${s.sec}</div>${L.map(i=>fila(i[0],i[1],i[2])).join('')}</div>
+        <div class="col-bloque"><div class="col-tit">${s.par.sec}${s.par.sec.includes('Pesc')?` <small>(incl. agregado)</small>`:''}</div>${R.map(i=>fila(i[0],i[1],i[2])).join('')}</div>
+      </div></div>`;
+    }
+    if (s.sandwiches) {
+      const V = filt(s.items), SN = filt(s.sandwiches);
+      const sRows = SN.map(i=>`<tr><td>${i[0]}</td><td class="${i[1]==='—'?'nd':''}">${i[1]}</td><td class="${i[2]==='—'?'nd':''}">${i[2]}</td><td class="${i[3]==='—'?'nd':''}">${i[3]}</td></tr>`).join('');
+      return `<div class="bloque ${bg}"><div class="dos-col">
+        <div class="col-bloque"><div class="col-tit">${s.sec}</div>${V.map(i=>fila(i[0],i[1],i[2])).join('')}</div>
+        <div class="col-bloque"><div class="col-tit">Sándwiches</div>
+          <table class="tabla-sand"><thead><tr><th></th><th>Liso</th><th>Clás.</th><th>Ital.</th></tr></thead><tbody>${sRows}</tbody></table>
+        </div></div></div>`;
+    }
+    const IT = filt(s.items);
+    return `<div class="bloque ${bg}">
+      <div class="bloque-titulo ${tt}">${s.sec}</div>
+      <div class="una-col">${IT.map(i=>fila(i[0],i[1],i[2])).join('')}</div>
+      ${s.stock?`<div class="nota-stock">*PRODUCTO SUJETO A STOCK</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+/* ── Builders por panel ── */
+function buildMar() {
+  return `<section class="sec sec-mar">
+    <div class="logo-wrap">
+      <div class="logo-box logo-mar"><div class="logo-sub">De</div><div class="logo-name">PUERTOS</div></div>
+      <span class="deco deco-r">🍴</span>
+    </div>
+    <div class="sec-body">${renderSec(DATA.mar,'bg-mar','')}</div>
+  </section>`;
+}
+
+function buildCampo() {
+  return `<section class="sec sec-campo">
+    <div class="logo-wrap">
+      <span class="deco deco-l" style="left:2px">🐄</span>
+      <div class="logo-box logo-campo"><div class="logo-sub">De</div><div class="logo-name">CAMPO</div></div>
+    </div>
+    <span class="deco deco-l" style="top:170px;left:2px;opacity:.45">🍅<br>🌶️</span>
+    <span class="deco deco-rr" style="top:170px;right:2px;opacity:.45">🧅<br>🥩</span>
+    <div class="sec-body">${renderSec(DATA.campo,'bg-campo','')}</div>
+  </section>`;
+}
+
+function buildSushi() {
+  const S = DATA.sushi;
+  const rollRows = filt(S.rolls).map(i=>`<tr><td>${i[0]}<span class="roll-desc">${i[1]}</span></td><td>$ ${i[2]}</td><td>$ ${i[3]}</td></tr>`).join('');
+  const fritoRows = filt(S.fritos).map(i=>fila(i[0],i[1],i[2])).join('');
+  const extraRows = filt(S.extras).map(i=>`<div class="fila"><span class="f-n">${i[0]}</span><span class="f-p">$ ${i[1]}</span></div>`).join('');
+  const comboRows = filt(S.combos).map(i=>fila(i[0],i[1],i[2])).join('');
+  return `<section class="sec sec-sushi">
+    <div class="logo-wrap">
+      <span class="deco deco-l" style="left:4px">🍣<br>🥢</span>
+      <div class="logo-box logo-sushi"><div class="logo-sub">Carta de</div><div class="logo-name">SUSHI</div></div>
+      <span class="deco deco-rr" style="right:4px">🍱<br>🫙</span>
+    </div>
+    <div class="sec-body">
+      <div class="bloque bg-sushi">
+        <div class="bloque-titulo t-sushi">Rolls Clásicos (8 piezas)</div>
+        <div class="una-col"><table class="tabla-rolls">
+          <thead><tr><th>Roll</th><th>8 pzas</th><th>16 pzas</th></tr></thead>
+          <tbody>${rollRows}</tbody>
+        </table></div>
+      </div>
+      <div class="bloque bg-sushi"><div class="dos-col">
+        <div class="col-bloque"><div class="col-tit sushi-st">Rolls Fritos</div>${fritoRows}</div>
+        <div class="col-bloque"><div class="col-tit sushi-st">Extras y Salsas</div>${extraRows}</div>
+      </div></div>
+      <div class="bloque bg-sushi">
+        <div class="bloque-titulo t-sushi">Combos Sushi</div>
+        <div class="una-col">${comboRows}</div>
+        <div class="nota-stock">Consulta disponibilidad · Precios de referencia</div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function buildTragos() {
+  const T = DATA.tragos;
+  return `<section class="sec sec-tragos">
+    <div class="tragos-header" style="position:relative">
+      <span class="tdl">🍹</span><span class="tdr">🍺</span>
+      <div class="tragos-titulo">Carta de Tragos</div>
+    </div>
+    <div class="tragos-row c4">
+      <div class="t-col"><div class="t-col-h">Cervezas<br>Ind.</div>${tItem(T.fila1.cervezasInd)}</div>
+      <div class="t-col"><div class="t-col-h">Cervezas<br>Litro</div>${tItem(T.fila1.cervezasLitro)}</div>
+      <div class="t-col"><div class="t-col-h">Schop</div>${tItem(T.fila1.schop)}</div>
+      <div class="t-col"><div class="t-col-h">Piscos</div>${tItem(T.fila1.piscos)}</div>
+    </div>
+    <div class="tragos-row c4">
+      <div class="t-col"><div class="t-col-h">Cócteles</div>${tItem(T.fila2.cocteles)}</div>
+      <div class="t-col">
+        <div class="t-col-h">Ron</div>${tItem(T.fila2.ron)}
+        <div class="t-col-sh">Gin</div>${tItem(T.fila2.gin)}
+      </div>
+      <div class="t-col">
+        <div class="t-col-h">Tequila</div>${tItem(T.fila2.tequila)}
+        <div class="t-col-sh">Whisky</div>${tItem(T.fila2.whisky)}
+      </div>
+      <div class="t-col"><div class="t-col-h">Vodka</div>${tItem(T.fila2.vodka)}</div>
+    </div>
+    <div class="tragos-row c2">
+      <div class="t-col"><div class="t-col-h">Vinos Preparados</div>${tItem(T.fila3.vinosPrep)}</div>
+      <div class="t-col"><div class="t-col-h">Vinos</div>${tItem(T.fila3.vinos)}</div>
+    </div>
+  </section>`;
+}
+
+/* ════════════════════════════════════════════════════════════
+   NAV CONTROLLER
+════════════════════════════════════════════════════════════ */
+const PANELS = {
+  mar:    { build: buildMar,    built: false },
+  campo:  { build: buildCampo,  built: false },
+  sushi:  { build: buildSushi,  built: false },
+  tragos: { build: buildTragos, built: false },
+};
+
+function showPanel(id) {
+  // Ocultar todos
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('visible'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.className = 'tab-btn');
+
+  // Mostrar el elegido
+  const panel = document.getElementById(`panel-${id}`);
+  // Render lazy — solo la primera vez
+  if (!PANELS[id].built) {
+    panel.innerHTML = PANELS[id].build();
+    PANELS[id].built = true;
+  }
+  panel.classList.add('visible');
+
+  // Activar tab con clase temática
+  const btn = document.querySelector(`[data-panel="${id}"]`);
+  btn.classList.add(`active-${id}`);
+
+  // Scroll al top del contenido
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Mostrar primer tab al cargar
+showPanel('mar');
+</script>
+
+</body>
+</html>
